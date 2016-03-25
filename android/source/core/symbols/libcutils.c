@@ -1,0 +1,35 @@
+void android_atomic_acquire_cas(){}
+void android_atomic_acquire_load(){}
+void android_atomic_acquire_store(){}
+void android_atomic_add(){}
+void android_atomic_and(){}
+void android_atomic_cas(){}
+void android_atomic_dec(){}
+void android_atomic_inc(){}
+void android_atomic_or(){}
+void android_atomic_release_cas(){}
+void android_atomic_release_load(){}
+void android_atomic_release_store(){}
+void android_log_addFilterString(){}
+void android_log_formatFromString(){}
+void str_parms_add_float(){}
+void str_parms_add_int(){}
+void str_parms_add_str(){}
+void str_parms_create(){}
+void str_parms_create_str(){}
+void str_parms_del(){}
+void str_parms_destroy(){}
+void str_parms_dump(){}
+void str_parms_get_float(){}
+void str_parms_get_int(){}
+void str_parms_get_str(){}
+void str_parms_to_str(){}
+void strcpy8to16(){}
+void strcpylen8to16(){}
+void strdup8to16(){}
+void strlen8to16(){}
+void strncpy16to8(){}
+void strndup16to8(){}
+void strnlen16to8(){}
+void native_handle_delete() {}
+void native_handle_close() {}
