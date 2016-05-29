@@ -16,7 +16,9 @@ LOCAL_PATH := $(call my-dir)
 
 
 # Include others make.mk
-$(call include-makefiles, $(LOCAL_PATH)/symbols/make.mk)
+MAKE_PATH := $(LOCAL_PATH)
+include $(MAKE_PATH)/symbols/make.mk
+LOCAL_PATH := $(MAKE_PATH)
 
 LIBIOMX_INCLUDES_COMMON := $(LOCAL_PATH)/../../include/openMAX \
 	                       $(LOCAL_PATH)/../../include
@@ -86,20 +88,10 @@ $(ANDROID_SYS_HEADERS)/$(1)/%,$(LIBIOMX_INCLUDES_$(2))),$(LIBIOMX_INCLUDES_$(1))
 define build_iomx_context
 include $(CLEAR_VARS)
 # Declare module name
-LOCAL_MODULE := lib$(2)_omx_$(1)
+LOCAL_MODULE := libandroid_$(2)_$(1)
 
-LOCAL_SRC_FILES := iomx.cpp\
-                   cap.cpp \
-                   sfs.cpp \
-                   gbuffer.cpp \
-                   local_sfs.cpp \
-                   IRTCBinder.cpp \
-                   RTCBinder.cpp
-
-# surface.cpp only the 8016 platform test to passed.
-# because of it is depends pc3 header file of the source tree,
-# but only we are have sdk_21 header of the google source.
-# LOCAL_SRC_FILES += surface.cpp
+LOCAL_SRC_FILES := \
+	gbuffer.cpp 
 
 LOCAL_LINK_MODE := c++
 LOCAL_CFLAGS := -Wno-reorder -DBUG_CHECK -DANDROID_SDK_VERSION=$(1) \
@@ -148,20 +140,22 @@ endef
 
 BUILD_VENDOR := qcom stone
 
-ifeq (arm64,$(TARGET_ARCH))
-BUILD_API_VERSION := 21
-else
-BUILD_API_VERSION := 18 19
-ifneq ($(filter 4.8% 4.9%, $(TOOLCHAIN_VERSION)),)
-BUILD_API_VERSION += 21 23
-endif
-endif
+#ifeq (arm64,$(TARGET_ARCH))
+#BUILD_API_VERSION := 21
+#else
+#BUILD_API_VERSION := 18 19
+#ifneq ($(filter 4.8% 4.9%, $(TOOLCHAIN_VERSION)),)
+#BUILD_API_VERSION += 21 23
+#endif
+#endif
+BUILD_API_VERSION := $(ANDROID_MIN_TARGET_SDK)
 
 $(foreach sdk,$(BUILD_API_VERSION), \
 	$(foreach vendor, $(BUILD_VENDOR), \
 	$(if $(wildcard $(ANDROID_SYS_HEADERS)/$(vendor)/$(sdk)), \
-    $(eval $(call build_iomx_context,$(sdk),$(vendor))))))
+    $(eval $(call build_iomx_context,$(sdk),$(vendor))),$(info $(ANDROID_SYS_HEADERS)/$(vendor)/$(sdk)))))
 
 ifneq ($(wildcard $(LOCAL_PATH)/test/make.mk),)
- $(call include-makefile, $(LOCAL_PATH)/test/make.mk)
+ #$(call include-makefile, $(LOCAL_PATH)/test/make.mk)
 endif
+

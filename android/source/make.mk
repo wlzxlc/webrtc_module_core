@@ -72,6 +72,6 @@ endif
 LOCAL_C_INCLUDES := $(LOCAL_PATH) 
 
 LOCAL_STATIC_LIBRARIES := librtc_module_api
-include $(BUILD_TEST)
+include $(BUILD_EXECUTABLE)
 
-include $(call all-subdir-makefiles)
+include $(wildcard $(LOCAL_PATH)/*/make.mk) 

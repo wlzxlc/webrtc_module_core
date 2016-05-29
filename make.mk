@@ -17,8 +17,7 @@ LOCAL_PATH := $(call my-dir)
  
 # Include others make.mk
 # $(call include-makefiles, /foo/make.mk /boo/make.mk)
- 
-ifeq ($(TARGET_PLATFORM),android)
- include $(call all-subdir-makefiles)
-endif
+ANDROID_MIN_TARGET_SDK ?= 14 
+
+include $(wildcard $(LOCAL_PATH)/*/make.mk)
  

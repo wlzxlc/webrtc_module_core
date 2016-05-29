@@ -18,5 +18,5 @@ LOCAL_PATH := $(call my-dir)
 # Include others make.mk
 # $(call include-makefiles, /foo/make.mk /boo/make.mk)
  
-include $(call all-subdir-makefiles)
+include $(wildcard $(LOCAL_PATH)/*/make.mk)
  

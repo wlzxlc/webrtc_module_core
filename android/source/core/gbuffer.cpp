@@ -1,4 +1,5 @@
-#if ANDROID_SDK_VERSION >= 11
+#include <android/api-level.h>
+#if __ANDROID_API__ >= 11
 #include <stdint.h>
 #include <binder/ProcessState.h>
 #include <ui/GraphicBuffer.h>
@@ -137,7 +138,7 @@ extern "C" {
         ANativeWindowBuffer *wbuffer = buffer->graphicBuffer.get();
         return wbuffer;
     }
-#if ANDROID_SDK_VERSION >=18
+#if __ANDROID_API__ >=18
     // For HAL_PIXEL_FORMAT_YCbCr_420_888^M
     static int iglockYCbCr(graphics_handle *gpc, uint32_t usage, graphics_ycbcr_t *ycbcr)
     {
@@ -190,7 +191,7 @@ extern "C" {
             p->unlock = igunlock;
             p->handle = ighandle;
             p->winbuffer = igwinbuffer;
-#if ANDROID_SDK_VERSION >= 18
+#if __ANDROID_API__ >= 18
             p->lockYCbCr = iglockYCbCr;
             p->lockYCbCrRect = iglockYCbCrRect;
 #endif
