@@ -49,7 +49,7 @@ namespace CCStone{
                 char buffer[256] = {0};
                 uint32_t vendor = 0;
                 while(vendor < sizeof(vendor_name) / sizeof(char *)){
-                    sprintf(buffer,"lib%s_omx_%d.so",vendor_name[vendor], tsdk);
+                    sprintf(buffer,"libandroid_%s_%d.so",vendor_name[vendor], tsdk);
                     DEBUG("Loading '%s' library.", buffer);        
                     hwd = dlopen(buffer, RTLD_NOW);
                     if (hwd){

@@ -11,7 +11,7 @@
 #endif
 using namespace CCStone;
 using namespace std;
-
+#if 0
 class OMXCallBack : public IOMXCallBack{
     public:
         virtual OMX_ERRORTYPE EventHandler(
@@ -574,4 +574,55 @@ int main(int c, char **s)
     testIPC(ipc);
     testJPEG(jpeg);
     return 0;
+}
+#endif // #if 0
+#define PRINT(exper)  printf("API[%s]: %s = %p \n",__FUNCTION__, #exper, exper)
+#define CALL(exper, ret_type)  (printf("%s[L%d] Call %s\n",__FUNCTION__, __LINE__, #exper) && false ) || \
+	exper == NULL ? (ret_type)0 : exper
+
+int TestGraphicBufferModule(WebRTCAPI &rtc)
+{
+	OmxGraphics_t &omx = *rtc.GetGraphicsAPI();
+	PRINT(omx.alloc);
+	PRINT(omx.destory);
+	PRINT(omx.handle);
+	PRINT(omx.height);
+	PRINT(omx.lock);
+	PRINT(omx.lockRect);
+	PRINT(omx.lockYCbCr);
+	PRINT(omx.pixelFormat);
+	PRINT(omx.reallocate);
+	PRINT(omx.rect);
+	PRINT(omx.stride);
+	PRINT(omx.unlock);
+	PRINT(omx.usage);
+	PRINT(omx.width);
+	PRINT(omx.winbuffer);
+
+	graphics_handle *gb = CALL(omx.alloc, graphics_handle *)(1280, 720, 0x11, 0);
+	if (gb) {
+		DEBUG("gb %p", gb);
+		CALL(omx.destory, void)(gb);
+	}
+
+	return 0;
+}
+
+int TestRenderModule(WebRTCAPI &rtc)
+{
+	RTCRenderHandle_t &render = *rtc.GetRenderAPI();
+	PRINT(render.create);
+	PRINT(render.create_from_java);
+	PRINT(render.dequeue);
+	PRINT(render.destroy);
+	PRINT(render.get_display_info);
+	PRINT(render.queue);
+	return 0;
+}
+
+int main(int argv, char *args[])
+{
+	WebRTCAPI &rtc = *WebRTCAPI::Create();
+	TestGraphicBufferModule(rtc);
+
 }
