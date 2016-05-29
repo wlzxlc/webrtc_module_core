@@ -22,6 +22,6 @@ endif
 .PHONY: all
 all:
 	@echo "###############Using NDK building. TARGET=$(TARGET)#################"
-	@$(ndk_cmd) NDK_PROJECT_PATH=ndk APP_BUILD_SCRIPT=make.mk NDK_APPLICATION_MK=ndk/Application.mk $(TARGET)
+	@$(ndk_cmd) NDK_PROJECT_PATH=ndk APP_BUILD_SCRIPT=make.mk NDK_APPLICATION_MK=ndk/Application.mk NDK_APP_OUT=out NDK_APP_LIBS_OUT=out/libs $(TARGET)
 
 endif
