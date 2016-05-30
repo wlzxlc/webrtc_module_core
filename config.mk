@@ -66,7 +66,7 @@ APP_ALIAS_BOARD := android-$(ANDROID_MIN_TARGET_SDK)
 # For example:
 #   APP_TOOLCHAIN := /opt/arm-linux-, or using the command option:
 #   'sysbuild --toolchain /opt/arm-linux-'
-APP_TOOLCHAIN := $(ANDROID_NDK)/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86/bin/arm-linux-androideabi-
+APP_TOOLCHAIN := $(ANDROID_NDK)/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-$(HOST_ARCH64)/bin/arm-linux-androideabi-
 
 #   The variable declare toolchain's --sysroot option, in ordinary not declare
 # it, but if you are to use the android-ndk toolchain then you are maby specify
