@@ -3,30 +3,11 @@
 #include <stdint.h>
 #include <binder/ProcessState.h>
 #include <ui/GraphicBuffer.h>
-#include "bug_helper.h"
 #include "graphics_type.h"
 #include "videobuffer.h"
 #include "core.cc"
 
-#ifdef DEBUG_RTC
-class ScopedDebug{
-    private:
-        const char *string;
-        int ln;
-
-    public:
-        ScopedDebug(int line, const char *s){
-            string = s;
-            ln = line;
-            DEBUG("ScopedDebug: [%d] --> %s", ln,s);
-        }
-        ~ScopedDebug(){
-            DEBUG("ScopedDebug: [%d] <-- %s", ln,string);
-        }
-};
-
-#define SCOPEDDEBUG() ScopedDebug __ScopedDebug(__LINE__,__FUNCTION__)
-#else
+#ifndef SCOPEDDEBUG
 #define SCOPEDDEBUG()
 #endif
 
@@ -136,9 +117,16 @@ extern "C" {
         SCOPEDDEBUG();
         VideoBuffer *buffer = static_cast<VideoBuffer *>(gpc);
         ANativeWindowBuffer *wbuffer = buffer->graphicBuffer.get();
-        return wbuffer;
+		char *t = (char *)wbuffer;
+		for (int i = 0; i < 32; i++) {
+            if(strncmp(t + i, "rfb_", 4) == 0) {
+				t = t + i;
+				break;
+            	}
+		}
+        return t;
     }
-#if __ANDROID_API__ >=18
+#if __ANDROID_API__ >= 100
     // For HAL_PIXEL_FORMAT_YCbCr_420_888^M
     static int iglockYCbCr(graphics_handle *gpc, uint32_t usage, graphics_ycbcr_t *ycbcr)
     {
@@ -191,7 +179,7 @@ extern "C" {
             p->unlock = igunlock;
             p->handle = ighandle;
             p->winbuffer = igwinbuffer;
-#if __ANDROID_API__ >= 18
+#if __ANDROID_API__ >= 100
             p->lockYCbCr = iglockYCbCr;
             p->lockYCbCrRect = iglockYCbCrRect;
 #endif

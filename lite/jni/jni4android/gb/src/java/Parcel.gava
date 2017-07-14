@@ -1,0 +1,12 @@
+package android.os;
+
+public class Parcel {
+ public static Parcel obtain();
+ public int readInt();
+ public void setDataPosition(int pos);
+ public int dataSize();
+ public int dataAvail();
+ public int dataPosition();
+ public int dataCapacity();
+ public void setDataSize(int size);
+}

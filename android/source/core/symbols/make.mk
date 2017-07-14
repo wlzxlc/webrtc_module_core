@@ -18,16 +18,9 @@ LOCAL_PATH := $(call my-dir)
 # Include others make.mk
 # $(call include-makefiles, /foo/make.mk /boo/make.mk)
  
-all_omx_libs := binder \
-	            cutils \
-				hardware \
-				media \
-				stagefright \
+all_omx_libs :=  \
 				ui \
-				utils \
-				gui \
-				stagefright_omx \
-				camera_client
+				cutils
 
 $(foreach lib, $(all_omx_libs),\
 	$(eval include $(CLEAR_VARS))\

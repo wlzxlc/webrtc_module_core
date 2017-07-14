@@ -1,0 +1,8 @@
+package java.nio;
+
+public class ByteBuffer {
+ public static ByteBuffer allocate(int capacity);
+ public static ByteBuffer wrap(byte[] array, int offset, int length);
+ public static ByteBuffer wrap(byte[] array);
+ public byte[] array();                               
+}

@@ -1,0 +1,10 @@
+package android.view;
+import android.os.Parcel;
+import android.graphics.Canvas;
+public class GraphicBuffer {
+private long mNativeObject;
+ public static GraphicBuffer create(int width, int height, int format, int usage);
+ public void writeToParcel(Parcel obj, int flag);
+ public Canvas lockCanvas();
+ public void unlockCanvasAndPost(Canvas canvas);
+}
