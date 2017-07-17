@@ -170,8 +170,12 @@ int J4A_loadClass__J4AC_android_view_GraphicBuffer(JNIEnv *env)
     name     = "mNativeObject";
     sign     = "J";
     class_J4AC_android_view_GraphicBuffer.field_mNativeObject = J4A_GetFieldID__catchAll(env, class_id, name, sign);
-    if (class_J4AC_android_view_GraphicBuffer.field_mNativeObject == NULL)
-        goto fail;
+    if (class_J4AC_android_view_GraphicBuffer.field_mNativeObject == NULL) {
+    	sign = "I";
+    	class_J4AC_android_view_GraphicBuffer.field_mNativeObject = J4A_GetFieldID__catchAll(env, class_id, name, sign);
+    	if (class_J4AC_android_view_GraphicBuffer.field_mNativeObject == NULL)
+    		goto fail;
+    }
 
     class_id = class_J4AC_android_view_GraphicBuffer.id;
     name     = "create";
