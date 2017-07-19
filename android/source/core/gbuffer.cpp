@@ -22,11 +22,29 @@ public:
 };
 
 extern "C" {
+
+    static void * igwinbuffer(graphics_handle *gpc)
+    {
+        SCOPEDDEBUG();
+        VideoBuffer *buffer = static_cast<VideoBuffer *>(gpc);
+        return buffer->win;
+    }
+
     static graphics_handle *igalloc(int w, int h, graphics_pixformat pix, int usage)
     {
         SCOPEDDEBUG();
         VideoBuffer *buffer = new VideoBufferImplGbuffer;
         buffer->graphicBuffer = new GraphicBuffer(w, h, (PixelFormat)pix, usage);
+
+		char *t = (char *)buffer->graphicBuffer.get();
+		for (int i = 0; i < 32; i++) {
+            if(strncmp(t + i, "rfb_", 4) == 0) {
+				t = t + i;
+				break;
+            	}
+		}
+
+        buffer->win = (ANativeWindowBuffer_t *)t;
         return buffer;
     }
 
@@ -36,37 +54,39 @@ extern "C" {
         VideoBuffer *buffer = static_cast<VideoBuffer *>(gpc);
         buffer->release();
     }
+
     static uint32_t  igwidth(graphics_handle *gpc)
     {
         SCOPEDDEBUG();
         VideoBuffer *buffer = static_cast<VideoBuffer *>(gpc);
-        return buffer->graphicBuffer->getWidth();
+        return buffer->win->width;
     }
+
     static uint32_t  igheight(graphics_handle *gpc)
     {
         SCOPEDDEBUG();
         VideoBuffer *buffer = static_cast<VideoBuffer *>(gpc);
-        return buffer->graphicBuffer->getHeight();
+        return buffer->win->height;
     }
     static uint32_t  igstride(graphics_handle *gpc)
     {
         SCOPEDDEBUG();
         VideoBuffer *buffer = static_cast<VideoBuffer *>(gpc);
-        return buffer->graphicBuffer->getStride();
+        return buffer->win->stride;
     }
 
     static uint32_t  igusage(graphics_handle *gpc)
     {
         SCOPEDDEBUG();
         VideoBuffer *buffer = static_cast<VideoBuffer *>(gpc);
-        return buffer->graphicBuffer->getUsage();
+        return buffer->win->usage;
     }
 
-    static int       igpixelFormat(graphics_handle *gpc)
+    static int  igpixelFormat(graphics_handle *gpc)
     {
         SCOPEDDEBUG();
         VideoBuffer *buffer = static_cast<VideoBuffer *>(gpc);
-        return (int)buffer->graphicBuffer->getPixelFormat();
+        return buffer->win->format;
     }
     static ARect     igrect(graphics_handle *gpc)
     {
@@ -80,6 +100,7 @@ extern "C" {
         r.right = buffer->graphicBuffer->getWidth() - rect.rightBottom().x; 
         return r;
     }
+
     static int igreallocate(graphics_handle *gpc, uint32_t w, uint32_t h,  graphics_pixformat f, uint32_t usage)
     {
         SCOPEDDEBUG();
@@ -111,20 +132,6 @@ extern "C" {
         VideoBuffer *buffer = static_cast<VideoBuffer *>(gpc);
         *len = sizeof(buffer_handle_t);
         return buffer->graphicBuffer->handle;
-    }
-    static void * igwinbuffer(graphics_handle *gpc)
-    {
-        SCOPEDDEBUG();
-        VideoBuffer *buffer = static_cast<VideoBuffer *>(gpc);
-        ANativeWindowBuffer *wbuffer = buffer->graphicBuffer.get();
-		char *t = (char *)wbuffer;
-		for (int i = 0; i < 32; i++) {
-            if(strncmp(t + i, "rfb_", 4) == 0) {
-				t = t + i;
-				break;
-            	}
-		}
-        return t;
     }
 #if __ANDROID_API__ >= 100
     // For HAL_PIXEL_FORMAT_YCbCr_420_888^M

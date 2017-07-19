@@ -109,3 +109,5 @@ void _ZN7android13GraphicBuffer9lockYCbCrEjP13android_ycbcr(){}
 void _ZN7android5Fence8NO_FENCEE(){}
 void _ZN7android5Fence11waitForeverEPKc(){}
 void _ZN7android5FenceD1Ev(){}
+void _ZNK7android7RefBase9incStrongEPKv(){}
+void _ZNK7android7RefBase9decStrongEPKv(){}

@@ -212,6 +212,8 @@ static int createEGLImageKHR(GraphicBufferOnNative &gb, int fb) {
 	if (!anw) {
 		PRINTE("anw is null");
 		return ERRNUM;
+	}else {
+		dumpAWB((ANativeWindowBuffer_t *)anw);
 	}
 
 	ANativeWindowBuffer_t *t = (ANativeWindowBuffer_t *) anw;
@@ -481,6 +483,44 @@ static int InitVideoBufferFromJava(OmxGraphics_t *hgb, JNIEnv *env) {
 	return 0;
 }
 
+static int testNativeGB(OmxGraphics_t &m)
+{
+	// rgba8888
+	int w = 736;
+	int h = 1280;
+	int color = IOMX_HAL_PIXEL_FORMAT_RGBA_8888;
+	int usage = IOMX_GRALLOC_USAGE_HW_TEXTURE |
+			IOMX_GRALLOC_USAGE_HW_FB |
+			IOMX_GRALLOC_USAGE_SW_READ_OFTEN |
+			IOMX_GRALLOC_USAGE_SW_WRITE_OFTEN;
+
+	PRINTI("==============GBTEST============");
+	graphics_handle *hwd = m.alloc(w, h, color, usage);
+	PRINTI("GBTEST: alloc w %d h %d color %#x usage %#x (ret:%p)", w, h, color, usage, hwd);
+	int nw = m.width(hwd);
+	int nh = m.height(hwd);
+	int ncolor = m.pixelFormat(hwd);
+	int nusage = m.usage(hwd);
+	int nstride = m.stride(hwd);
+	PRINTI("GBTEST: Hwd info nw %d nh %d ncolor %#x nusage %#x nstride %d", nw, nh, ncolor, nusage, nstride);
+
+	int size = w * h * 4;
+	PRINTI("GBTEST: test memory write %d bytes with value 'c' ", size);
+	char *addr = NULL;
+	m.lock(hwd, IOMX_GRALLOC_USAGE_SW_WRITE_OFTEN | IOMX_GRALLOC_USAGE_SW_READ_OFTEN, (void **)&addr);
+	memset(addr, 'c', size);
+	PRINTI("GBTEST: test memory read [0] = %c, [%d] = %c, [%d] = %c",
+			addr[0], (size - w * h), addr[(size - w * h)], size - 1, addr[size - 1]);
+	m.unlock(hwd);
+	PRINTI("GBTEST: destroy hwd %p", hwd);
+	m.destory(hwd);
+	PRINTI("============GBTEST done ============");
+	if (w != nw || h != nh || color != ncolor || usage != nusage || nstride < w) {
+		return ERRNUM;
+	}
+	return 0;
+}
+
 static jint load(JNIEnv *env, jobject obj, jint sdk, jstring path) {
 	int ret = ERRNUM;
 	long ptr = 0;
@@ -516,6 +556,9 @@ static jint load(JNIEnv *env, jobject obj, jint sdk, jstring path) {
 				goto faild;
 			}
 			ret = InitVideoBuffer(&gbhand, handle);
+			if (!ret) {
+				ret = testNativeGB(gbhand);
+			}
 
 		} else {
 			PRINTI("Using Java GraphicBuffer module.");
@@ -550,11 +593,16 @@ static jint load(JNIEnv *env, jobject obj, jint sdk, jstring path) {
 	} else {
 		PRINTI("already exist native object %ld", ptr);
 	}
-	faild: return ret;
+
+	faild:
+	if (ret && handle) {
+		dlclose(handle);
+	}
+	return ret;
 }
 
 static jint createFrameBufferAndBind(JNIEnv *env, jobject obj, jint w, jint h,
-		jint color, int fd) {
+		jint color, int fb) {
 	GraphicBufferOnNative *ngb =
 			(GraphicBufferOnNative *) J4AC_com_snail_gb_GraphicBuffer__mNativeObject__get(
 					env, obj);
@@ -581,17 +629,6 @@ static jint createFrameBufferAndBind(JNIEnv *env, jobject obj, jint w, jint h,
 			IOMX_GRALLOC_USAGE_SW_READ_OFTEN |
 			IOMX_GRALLOC_USAGE_SW_WRITE_OFTEN
 			);
-
-	void * addr = NULL;
-	_gfd.hwd.lock(gb, IOMX_GRALLOC_USAGE_SW_WRITE_OFTEN, &addr);
-	if (addr) {
-		int size = getPixformatSize(w, h, ngb->src_color);
-		PRINTI("Test write memory size %d", size);
-		memset(addr, 0, size);
-		PRINTI("Test write memory done.");
-		_gfd.hwd.unlock(gb);
-	}
-
 	if (!gb)
 		return ERRNUM;
 
@@ -599,13 +636,15 @@ static jint createFrameBufferAndBind(JNIEnv *env, jobject obj, jint w, jint h,
 	ngb->gb = gb;
 	ngb->w = w;
 	ngb->h = h;
-	int tex = createEGLImageKHR(*ngb, fd);
+	int tex = createEGLImageKHR(*ngb, fb);
 	if (tex <= 0) {
 		PRINTE("createEGLImageKHR create!");
 		_gfd.hwd.destory(gb);
 		ngb->gb = NULL;
 		return ERRNUM;
 	}
+
+	PRINTI("Create FrameBuffer succeed!");
 	return tex;
 }
 

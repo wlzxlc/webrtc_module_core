@@ -15,6 +15,7 @@ using namespace android;
 class VideoBuffer{
     public:
         sp<GraphicBuffer> graphicBuffer;
+        ANativeWindowBuffer_t * win;
         virtual void release() = 0;
         virtual ~VideoBuffer() { DEBUG("~Dtor VideoBuffer");}
 };
